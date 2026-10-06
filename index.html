@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Library</title>
+
+    <link rel="preload" as="image" href="commisions/book.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+
+    <style>
+:root {
+        --serif: 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+        --serif-sc: 'IM Fell English SC', 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+        --paper: #f4f0e6;
+        --muted: #b9b2a2;
+        --gap: 40px;
+
+        /* Book-page text sizes. The shelf/wall labels on the drawing auto-shrink
+           to fit their box in every language, but this book text (meta fields
+           and the description) doesn't — it just wraps. If a language's words
+           run long and you want smaller text specifically for it, override
+           these under an html[lang="xx"] rule below instead of editing here. */
+        --meta-size: 19px;
+        --desc-size: 22px;
+        --dlabel-size: 19px;
+}
+/* Example: shrink the meta/description text a bit only while the site is in
+   Dutch. Copy this block, change "nl" to any other language code from
+   i18n.js's LANGS, and adjust the px values. Leave it out entirely for a
+   language and it just uses the defaults above. */
+/*
+html[lang="nl"] {
+        --meta-size: 17px;
+        --desc-size: 20px;
+        --dlabel-size: 17px;
+}
+*/
+* {
+        box-sizing: border-box;
+}html, body {
+        height: 100%;
+        margin: 0;
+        background: #000;
+        overflow: hidden;
+}body {
+        display: grid;
+        place-items: center;
+        color: var(--paper);
+        font-family: var(--serif);
+}.stage {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        width: min(calc(100vw - var(--gap)), calc((100vh - var(--gap)) * 16 / 9));
+        height: min(calc(100vh - var(--gap)), calc((100vw - var(--gap)) * 9 / 16));
+        width: min(calc(100vw - var(--gap)), calc((100dvh - var(--gap)) * 16 / 9));
+        height: min(calc(100dvh - var(--gap)), calc((100vw - var(--gap)) * 9 / 16));
+        user-select: none;
+        -webkit-user-select: none;
+}.stage > .bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+}.space {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: 0 0;
+        pointer-events: none;
+}.label {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: 0 0;
+        font-family: var(--serif);
+        line-height: 1.1;
+        color: var(--paper);
+        text-decoration: none;
+}.label > span {
+        display: block;
+        max-width: 100%;
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+}.label.title {
+        font-family: var(--serif-sc);
+        letter-spacing: .04em;
+}.label.italic {
+        font-style: italic;
+}.label .k, .label .v {
+        display: block;
+}.label .k {
+        font-family: var(--serif-sc);
+        letter-spacing: .03em;
+        opacity: .7;
+}a.label .v {
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: .15em;
+}a.label {
+        pointer-events: auto;
+        cursor: pointer;
+}a.label:hover {
+        text-decoration: underline;
+        text-underline-offset: .12em;
+}#hits, #edit {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+}.hit {
+        fill: rgba(255, 244, 214, 0);
+        stroke: rgba(255, 255, 255, 0);
+        stroke-width: 2px;
+        vector-effect: non-scaling-stroke;
+        cursor: var(--book-cursor, pointer);
+        transition: fill .15s, stroke .15s;
+        outline: none;
+}.hit:hover, .hit:focus-visible {
+        fill: rgba(255, 244, 214, .09);
+        stroke: #d0cabd;
+}#tip {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 30;
+        padding: .32em .75em .38em;
+        background: #000;
+        color: var(--paper);
+        border: 1.5px solid #fff;
+        border-radius: 3px;
+        font: 400 19px/1.15 var(--serif);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .12s;
+        will-change: transform;
+}#tip.on {
+        opacity: 1;
+}#tip::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -7px;
+        width: 10px;
+        height: 10px;
+        background: #000;
+        border: solid #fff;
+        border-width: 0 1.5px 1.5px 0;
+        transform: translateX(-50%) rotate(45deg);
+}#overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, .8);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s ease, visibility 0s linear .25s;
+}#overlay.open {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity .25s ease;
+}.bookstage {
+        position: relative;
+        aspect-ratio: 1440 / 820;
+        width: min(calc(100vw - var(--gap)), calc((100vh - var(--gap)) * 1440 / 820));
+        height: min(calc(100vh - var(--gap)), calc((100vw - var(--gap)) * 820 / 1440));
+        width: min(calc(100vw - var(--gap)), calc((100dvh - var(--gap)) * 1440 / 820));
+        height: min(calc(100dvh - var(--gap)), calc((100vw - var(--gap)) * 820 / 1440));
+        transform: translateY(14px) scale(.95);
+        transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+}#overlay.open .bookstage {
+        transform: none;
+}.bookstage > img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        user-select: none;
+        -webkit-user-drag: none;
+}.bookspace {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1440px;
+        height: 820px;
+        transform-origin: 0 0;
+}.bookspace > * {
+        position: absolute;
+}.pg-title {
+        left: 340px;
+        top: 78px;
+        width: 350px;
+        height: 92px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: var(--serif-sc);
+        letter-spacing: .03em;
+        line-height: 1.05;
+}.pg-title > span {
+        display: block;
+        max-width: 100%;
+}.pg-rule {
+        left: 372px;
+        top: 176px;
+        width: 320px;
+        height: 0;
+        border-top: 1.5px solid rgba(255, 255, 255, .55);
+}.pg-body {
+        left: 258px;
+        top: 184px;
+        width: 436px;
+        height: 428px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+}.pg-meta {
+        flex: none;
+        margin: 0;
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: 12px;
+        row-gap: 0;
+        font-size: var(--meta-size);
+        line-height: 1.22;
+}.pg-meta dt {
+        font-family: var(--serif-sc);
+        color: var(--muted);
+        letter-spacing: .03em;
+}.pg-meta dd {
+        margin: 0;
+        color: var(--paper);
+        min-width: 0;
+        overflow-wrap: anywhere;
+}.pg-dlabel {
+        flex: none;
+        margin-top: 6px;
+        padding-top: 7px;
+        border-top: 1px solid rgba(255, 255, 255, .3);
+        font-family: var(--serif-sc);
+        font-size: var(--dlabel-size);
+        letter-spacing: .05em;
+        color: var(--muted);
+}.pg-desc {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 10px;
+        font-size: var(--desc-size);
+        line-height: 1.38;
+        color: var(--paper);
+        padding-bottom: 22px;
+        -webkit-mask-image: linear-gradient(#000 calc(100% - 22px), transparent);
+        mask-image: linear-gradient(#000 calc(100% - 22px), transparent);
+        scrollbar-width: thin;
+        scrollbar-color: #fff transparent;
+}.pg-desc p {
+        margin: 0 0 .6em;
+}.pg-desc a {
+        color: inherit;
+        text-underline-offset: .15em;
+}.pg-images {
+        left: 398px;
+        top: 618px;
+        width: 296px;
+        height: 84px;
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+}.pg-images figure {
+        margin: 0;
+        flex: 1 1 0;
+        min-width: 0;
+        height: 100%;
+        border: 1.5px solid #fff;
+        background: #000;
+        overflow: hidden;
+}.pg-images.n1 figure {
+        flex: 0 1 150px;
+}.pg-images img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+}.pg-cap {
+        left: 764px;
+        top: 96px;
+        width: 330px;
+        height: 88px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 4px;
+}.pg-cap .k {
+        font-family: var(--serif-sc);
+        font-size: 26px;
+        letter-spacing: .06em;
+}.pg-cap .h {
+        font-size: 20px;
+        font-style: italic;
+        color: var(--muted);
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+}.pg-frame {
+        left: 752px;
+        top: 196px;
+        width: 444px;
+        height: 364px;
+        border: 1.5px solid #fff;
+        background: #0b0b0b;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        font-style: italic;
+        font-size: 22px;
+}.pg-frame::before {
+        content: attr(data-loading);
+        position: absolute;
+        color: var(--muted);
+        font-style: italic;
+        font-size: 22px;
+}.pg-frame.empty::before, .pg-frame.loaded::before {
+        content: none;
+}.pg-frame iframe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border: 0;
+        transform-origin: 0 0;
+        background: transparent;
+}.pg-frame.loaded iframe {
+        background: #fff;
+}.pg-links {
+        left: 760px;
+        top: 574px;
+        width: 336px;
+        height: 124px;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 4px 22px;
+        overflow: hidden;
+}.pg-links a {
+        font-size: 25px;
+        color: var(--paper);
+        text-decoration: underline;
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: .2em;
+        white-space: nowrap;
+}.pg-links a:hover {
+        color: #fff;
+        text-decoration-thickness: 2.5px;
+}.pg-links a i {
+        font-style: normal;
+        font-size: .8em;
+        margin-left: .2em;
+}.bookspace [hidden] {
+        display: none !important;
+}#bClose {
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        z-index: 25;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border-radius: 50%;
+        background: #000;
+        color: #fff;
+        border: 1.5px solid #fff;
+        font: 400 26px/1 var(--serif);
+        cursor: pointer;
+}#bClose:hover, #bClose:focus-visible {
+        background: #fff;
+        color: #000;
+        outline: none;
+}#edit {
+        display: none;
+        touch-action: none;
+}.stage.editing #edit {
+        display: block;
+}.stage.editing #hits {
+        pointer-events: none;
+}.stage.editing .label {
+        outline: 1px dashed rgba(90, 220, 255, .8);
+}.ez {
+        fill: rgba(255, 180, 0, .10);
+        stroke: #ffb400;
+        stroke-width: 1.5px;
+        vector-effect: non-scaling-stroke;
+        cursor: move;
+}.ez.used {
+        fill: rgba(80, 255, 140, .12);
+        stroke: #4dff8c;
+}.ez.sel {
+        fill: rgba(255, 70, 70, .18);
+        stroke: #ff4646;
+        stroke-width: 2.5px;
+}.et {
+        fill: #fff;
+        paint-order: stroke;
+        stroke: #000;
+        stroke-width: 3px;
+        text-anchor: middle;
+        dominant-baseline: middle;
+        pointer-events: none;
+        font-family: sans-serif;
+}.eh {
+        display: none;
+        fill: #fff;
+        stroke: #ff4646;
+        stroke-width: 2px;
+        vector-effect: non-scaling-stroke;
+        cursor: crosshair;
+}#edit g.sel .eh {
+        display: block;
+}#editbar {
+        position: fixed;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        z-index: 40;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: calc(100vw - 20px);
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, .92);
+        border: 1.5px solid #fff;
+        border-radius: 6px;
+        font: 14px/1.2 system-ui, sans-serif;
+        color: #fff;
+}body.editing #editbar {
+        display: flex;
+}#editbar button {
+        font: inherit;
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid #fff;
+        background: #222;
+        color: #fff;
+        cursor: pointer;
+}#editbar button:hover {
+        background: #fff;
+        color: #000;
+}#editbar .info {
+        min-width: 9.5em;
+        font-variant-numeric: tabular-nums;
+        opacity: .85;
+}#editbar small {
+        opacity: .6;
+}#copybox {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        place-items: center;
+        background: rgba(0,0,0,.85);
+}#copybox.on {
+        display: grid;
+}#copybox div {
+        width: min(760px, 92vw);
+        font: 14px/1.4 system-ui, sans-serif;
+        color: #fff;
+}#copybox textarea {
+        width: 100%;
+        height: 50vh;
+        background: #111;
+        color: #fff;
+        border: 1px solid #fff;
+        font: 12px/1.4 ui-monospace, monospace;
+        padding: 10px;
+}#copybox button {
+        margin-top: 8px;
+        padding: 6px 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {#overlay, .bookstage, #tip, .hit {
+        transition: none;
+}
+}
+    </style>
+</head>
+<body>
+
+    <main class="stage" id="stage">
+        <img class="bg" src="commisions/library.jpg" alt="A dark, hand-drawn library full of bookshelves, a staircase and a coffee table" draggable="false">
+        <div class="space" id="space"></div>
+        <svg id="hits" viewBox="0 0 1920 1080" preserveAspectRatio="none" role="group" aria-label="Projects"></svg>
+        <svg id="edit" viewBox="0 0 1920 1080" preserveAspectRatio="none"></svg>
+    </main>
+
+    <div id="tip" role="tooltip"></div>
+
+    <div id="overlay" inert aria-hidden="true">
+        <button id="bClose" type="button" aria-label="Close book" data-i18n-aria="closeBook">&times;</button>
+        <div class="bookstage" id="bookStage" role="dialog" aria-modal="true" aria-labelledby="bTitle">
+            <img src="commisions/book.png" alt="" draggable="false">
+            <div class="bookspace" id="bookSpace">
+                <h2 class="pg-title" style="margin:0;font-weight:400"><span id="bTitle"></span></h2>
+                <div class="pg-rule"></div>
+                <div class="pg-body">
+                    <dl class="pg-meta" id="bMeta"></dl>
+                    <div class="pg-dlabel" id="bDLabel"></div>
+                    <div class="pg-desc" id="bDesc" tabindex="0"></div>
+                </div>
+                <div class="pg-images" id="bImgs" hidden></div>
+                <div class="pg-cap" id="bCap"><span class="k" id="bCapK"></span><span class="h" id="bHost"></span></div>
+                <div class="pg-frame" id="bFrame"></div>
+                <div class="pg-links" id="bLinks"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="layout.js"></script>
+    <script src="i18n.js"></script>
+    <script src="projects.js"></script>
+    <script>
+    (() => {
+        'use strict';
+
+        const IMG_W = 1920, IMG_H = 1080, BOOK_W = 1440;
+        const $ = (s, r = document) => r.querySelector(s);
+        const SVGNS = 'http://www.w3.org/2000/svg';
+        const svgEl = (tag, attrs = {}) => {
+            const e = document.createElementNS(SVGNS, tag);
+            for (const k in attrs) e.setAttribute(k, attrs[k]);
+            return e;
+        };
+        const pts = (a) => a.map(p => p.join(',')).join(' ');
+
+        const stage = $('#stage'), space = $('#space'), hits = $('#hits'), tip = $('#tip');
+        const overlay = $('#overlay'), bookStage = $('#bookStage'), bookSpace = $('#bookSpace');
+
+        /* ---------------------------------------------------------------
+           LANGUAGE / TRANSLATIONS
+           The site always boots in LANGS[0] (English). langChangeHooks are
+           functions to re-run whenever the language changes, so anything
+           currently on screen updates without a page reload.
+           --------------------------------------------------------------- */
+        const ALL_LANGS = (typeof LANGS !== 'undefined' && LANGS.length) ? LANGS : ['en'];
+        let currentLang = ALL_LANGS[0];
+        const langChangeHooks = [];
+        const onLangChange = (fn) => langChangeHooks.push(fn);
+
+        // label = a LABELS entry's `key`; field = 'text' | 'sub'; fallback = the English default already in that entry.
+        function trLabel(key, field, fallback) {
+            const e = key && typeof I18N_LABELS !== 'undefined' ? I18N_LABELS[key] : null;
+            const v = e && e[currentLang] && e[currentLang][field];
+            return v || fallback;
+        }
+        // id = a PROJECTS entry's `id`; field = one of title/type/writtenIn/status/date/group/duration/description.
+        function trProject(id, field, fallback) {
+            const e = id && typeof I18N_PROJECTS !== 'undefined' ? I18N_PROJECTS[id] : null;
+            const v = e && e[currentLang] && e[currentLang][field];
+            return v || fallback;
+        }
+        // the translated label for links[i] of project `id`, or the original label if untranslated.
+        function trLink(id, i, fallback) {
+            const e = id && typeof I18N_PROJECTS !== 'undefined' ? I18N_PROJECTS[id] : null;
+            const v = e && e[currentLang] && e[currentLang].links && e[currentLang].links[i];
+            return v || fallback;
+        }
+        // small interface strings (I18N_UI), English is stored inline in i18n.js.
+        function trUI(key) {
+            const e = typeof I18N_UI !== 'undefined' ? I18N_UI[key] : null;
+            if (!e) return '';
+            return e[currentLang] || e.en || '';
+        }
+
+        function setLang(lang) {
+            if (!ALL_LANGS.includes(lang) || lang === currentLang) return;
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            langChangeHooks.forEach(fn => fn());
+        }
+        function cycleLang() {
+            setLang(ALL_LANGS[(ALL_LANGS.indexOf(currentLang) + 1) % ALL_LANGS.length]);
+        }
+
+        function rescale() {
+            space.style.transform = `scale(${stage.clientWidth / IMG_W})`;
+            const bw = bookStage.clientWidth;
+            if (bw) bookSpace.style.transform = `scale(${bw / BOOK_W})`;
+        }
+        const ro = new ResizeObserver(() => { rescale(); if (editing) renderEdit(); });
+        ro.observe(stage); ro.observe(bookStage);
+        rescale();
+
+        const cursorSvg =
+            `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'>` +
+            `<path d='M16 8C12 5.5 7 5.5 3 7v18c4-1.5 9-1.5 13 1 4-2.5 9-2.5 13-1V7c-4-1.5-9-1.5-13 1z' fill='#fff' stroke='#000' stroke-width='1.8' stroke-linejoin='round'/>` +
+            `<path d='M16 8v18' stroke='#000' stroke-width='1.8'/>` +
+            `<path d='M6 11.5c3-.8 6-.4 8 .8M6 15.5c3-.8 6-.4 8 .8M6 19.5c3-.8 6-.4 8 .8M18 12.3c2-1.2 5-1.6 8-.8M18 16.3c2-1.2 5-1.6 8-.8M18 20.3c2-1.2 5-1.6 8-.8' stroke='#000' stroke-width='1.3' fill='none' stroke-linecap='round'/>` +
+            `</svg>`;
+        document.documentElement.style.setProperty(
+            '--book-cursor', `url("data:image/svg+xml,${encodeURIComponent(cursorSvg)}") 16 16, pointer`);
+
+        function fit(box, inner, max, min = 10) {
+            let s = max;
+            inner.style.fontSize = s + 'px';
+            while (s > min && (inner.scrollHeight > box.clientHeight + 1 || inner.scrollWidth > box.clientWidth + 1)) {
+                s -= 1;
+                inner.style.fontSize = s + 'px';
+            }
+        }
+
+        function quadMatrix(w, h, q) {
+            const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = q;
+            const sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+            let a, b, c, d, e, f, g, hh;
+            if (Math.abs(sx) < 1e-9 && Math.abs(sy) < 1e-9) {
+                a = x1 - x0; b = x3 - x0; c = x0; d = y1 - y0; e = y3 - y0; f = y0; g = 0; hh = 0;
+            } else {
+                const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2;
+                const det = dx1 * dy2 - dx2 * dy1;
+                g  = (sx * dy2 - dx2 * sy) / det;
+                hh = (dx1 * sy - sx * dy1) / det;
+                a = x1 - x0 + g * x1;  b = x3 - x0 + hh * x3;  c = x0;
+                d = y1 - y0 + g * y1;  e = y3 - y0 + hh * y3;  f = y0;
+            }
+            return `matrix3d(${a / w},${d / w},0,${g / w}, ${b / h},${e / h},0,${hh / h}, 0,0,1,0, ${c},${f},0,1)`;
+        }
+        const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1]);
+
+        const labelFits = [];
+        const labelI18n = []; // { l, kEl|span, vEl } — entries with a translation key, updated on language change
+        (typeof LABELS !== 'undefined' ? LABELS : []).forEach(l => {
+            const box = document.createElement(l.href ? 'a' : 'div');
+            box.className = 'label' + (l.font === 'title' ? ' title' : '') + (l.italic ? ' italic' : '');
+            if (l.href) { box.href = l.href; if (/^https?:/.test(l.href)) { box.target = '_blank'; box.rel = 'noopener noreferrer'; } }
+            const span = document.createElement('span');
+            if (l.sub != null) {                       // two lines: small heading + value
+                const k = document.createElement('span'); k.className = 'k'; k.textContent = trLabel(l.key, 'text', l.text);
+                const v = document.createElement('span'); v.className = 'v'; v.textContent = trLabel(l.key, 'sub', l.sub);
+                span.append(k, v);
+                if (l.key) labelI18n.push({ l, kEl: k, vEl: v });
+            } else {
+                span.textContent = trLabel(l.key, 'text', l.text);
+                if (l.key) labelI18n.push({ l, kEl: span });
+            }
+            box.append(span);
+
+            let w = l.w, h = l.h, left = l.x, top = l.y;
+            if (l.quad) {
+                w = w || dist(l.quad[0], l.quad[1]);
+                h = h || dist(l.quad[0], l.quad[3]);
+                left = 0; top = 0;
+                box.style.transform = quadMatrix(w, h, l.quad);
+            } else if (l.rotate) {
+                box.style.transform = `rotate(${l.rotate}deg)`;
+                box.style.transformOrigin = '50% 50%';
+            }
+            Object.assign(box.style, { left: left + 'px', top: top + 'px', width: w + 'px', height: h + 'px' });
+
+            const size = trLabelSize(l.key, l.size || 32);
+            box.style.fontSize = size + 'px';
+            if (l.color) box.style.color = l.color;
+            if (l.opacity != null) box.style.opacity = l.opacity;
+            if (l.spacing) box.style.letterSpacing = l.spacing + 'px';
+            if (l.align) box.style.textAlign = l.align;
+            if (l.align === 'left') box.style.justifyContent = 'flex-start';
+            if (l.align === 'right') box.style.justifyContent = 'flex-end';
+            if (l.valign === 'top') box.style.alignItems = 'flex-start';
+            if (l.valign === 'bottom') box.style.alignItems = 'flex-end';
+            space.append(box);
+            if (l.fit !== false) labelFits.push({ box, span, l });
+        });
+        // Starting font size (px) for a label: its own `size` in projects.js,
+        // unless the current language gives it a `size` override in i18n.js
+        // (I18N_LABELS.<key>.<lang>.size) — see i18n.js for how to set one.
+        function trLabelSize(key, fallback) {
+            const e = key && typeof I18N_LABELS !== 'undefined' ? I18N_LABELS[key] : null;
+            const v = e && e[currentLang] && e[currentLang].size;
+            return v || fallback;
+        }
+        const refitLabels = () => labelFits.forEach(o => fit(o.box, o.span, trLabelSize(o.l.key, o.l.size || 32), 10));
+        refitLabels();
+        onLangChange(() => {
+            labelI18n.forEach(o => {
+                o.kEl.textContent = trLabel(o.l.key, 'text', o.l.text);
+                if (o.vEl) o.vEl.textContent = trLabel(o.l.key, 'sub', o.l.sub);
+            });
+            refitLabels();
+        });
+
+        const shelfById = new Map(SHELVES.map(s => [s.id, s]));
+        const projectById = new Map(PROJECTS.map(p => [p.id, p]));
+        const claimed = new Set();
+
+        function placeTip(x, y) {
+            const half = tip.offsetWidth / 2 + 8;
+            const cx = Math.min(Math.max(x, half), window.innerWidth - half);
+            const cy = Math.max(y, tip.offsetHeight + 12);
+            tip.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -100%)`;
+        }
+        function showTip(text, x, y) { tip.textContent = text; tip.classList.add('on'); placeTip(x, y); }
+        function hideTip() { tip.classList.remove('on'); }
+
+        function buildHits() {
+            hits.innerHTML = '';
+            claimed.clear();
+            PROJECTS.forEach(p => {
+                const s = shelfById.get(p.shelf);
+                if (!s) { if (p.shelf) console.warn(`[library] "${p.id}" points at unknown shelf "${p.shelf}"`); return; }
+                if (claimed.has(s.id)) console.warn(`[library] shelf "${s.id}" is used by more than one project`);
+                claimed.add(s.id);
+
+                const getTitle = () => trProject(p.id, 'title', p.title);
+                const poly = svgEl('polygon', {
+                    class: 'hit', points: pts(s.points), tabindex: 0, role: 'button',
+                    'aria-label': getTitle(), 'data-shelf': s.id,
+                });
+                poly.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') showTip(getTitle(), e.clientX, e.clientY - 26); });
+                poly.addEventListener('pointermove',  e => { if (e.pointerType !== 'touch') placeTip(e.clientX, e.clientY - 26); });
+                poly.addEventListener('pointerleave', hideTip);
+                poly.addEventListener('focus', () => {
+                    if (!poly.matches(':focus-visible')) return;
+                    const r = poly.getBoundingClientRect();
+                    showTip(getTitle(), r.left + r.width / 2, r.top - 6);
+                });
+                poly.addEventListener('blur', hideTip);
+                poly.addEventListener('click', () => openProject(p.id, true, poly));
+                poly.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProject(p.id, true, poly); }
+                });
+                hits.append(poly);
+            });
+            buildLanguageHit();
+        }
+
+        // The language-toggle "button": hovering the flag/rug icon above the
+        // "Animations" label shows the word "language" in the language
+        // currently on screen; clicking it cycles to the next language.
+        // Reuses the same .hit hover styling as the project shelves.
+        function buildLanguageHit() {
+            const s = shelfById.get('languageToggle');
+            if (!s) return;
+            const poly = svgEl('polygon', {
+                class: 'hit', points: pts(s.points), tabindex: 0, role: 'button',
+                'aria-label': trUI('languageName'), 'data-shelf': s.id,
+            });
+            poly.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') showTip(trUI('languageName'), e.clientX, e.clientY - 26); });
+            poly.addEventListener('pointermove',  e => { if (e.pointerType !== 'touch') placeTip(e.clientX, e.clientY - 26); });
+            poly.addEventListener('pointerleave', hideTip);
+            poly.addEventListener('focus', () => {
+                if (!poly.matches(':focus-visible')) return;
+                const r = poly.getBoundingClientRect();
+                showTip(trUI('languageName'), r.left + r.width / 2, r.top - 6);
+            });
+            poly.addEventListener('blur', hideTip);
+            const toggle = () => {
+                cycleLang();
+                poly.setAttribute('aria-label', trUI('languageName'));
+                if (tip.classList.contains('on')) tip.textContent = trUI('languageName');
+            };
+            poly.addEventListener('click', toggle);
+            poly.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+            });
+            hits.append(poly);
+        }
+        buildHits();
+        onLangChange(buildHits);
+
+        const B = {
+            title: $('#bTitle'), meta: $('#bMeta'), dlabel: $('#bDLabel'), desc: $('#bDesc'), imgs: $('#bImgs'),
+            host: $('#bHost'), cap: $('#bCap'), capK: $('#bCapK'), frame: $('#bFrame'), links: $('#bLinks'), close: $('#bClose'),
+        };
+        const applyAriaI18n = () => document.querySelectorAll('[data-i18n-aria]')
+            .forEach(el => el.setAttribute('aria-label', trUI(el.dataset.i18nAria)));
+        applyAriaI18n();
+        onLangChange(applyAriaI18n);
+        let current = null, viaClick = false, lastFocus = null, clearTimer = 0;
+
+        const META_FIELDS = [['typeLabel', 'type'], ['writtenInLabel', 'writtenIn'], ['statusLabel', 'status'], ['dateLabel', 'date'], ['groupLabel', 'group'], ['durationLabel', 'duration']];
+        const paragraphs = (t) => (t || '').trim().split(/\n\s*\n/).filter(Boolean)
+            .map(x => `<p>${x.trim().replace(/\n+/g, ' ')}</p>`).join('');
+
+        function fitTitle() { fit(B.title.parentElement, B.title, 42, 18); }
+
+        function render(p) {
+            B.title.textContent = trProject(p.id, 'title', p.title);
+            fitTitle();
+            B.meta.innerHTML = '';
+            META_FIELDS.forEach(([labelKey, key]) => {
+                const val = trProject(p.id, key, p[key]);
+                if (!val) return;
+                const dt = document.createElement('dt'), dd = document.createElement('dd');
+                dt.textContent = trUI(labelKey) + ':'; dd.textContent = val;
+                B.meta.append(dt, dd);
+            });
+            B.meta.hidden = !B.meta.children.length;
+            const descFallback = p.description != null ? p.description : p.discription;
+            const desc = trProject(p.id, 'description', descFallback);
+            B.dlabel.hidden = !desc;
+            B.dlabel.textContent = trUI('description');
+            B.desc.innerHTML = paragraphs(desc);
+            B.desc.scrollTop = 0;
+
+            B.imgs.innerHTML = '';
+            const images = (p.images || []).slice(0, 2);
+            B.imgs.hidden = !images.length;
+            B.imgs.className = 'pg-images n' + images.length;
+            images.forEach(src => {
+                const f = document.createElement('figure');
+                const im = new Image();
+                im.src = src; im.alt = ''; im.decoding = 'async';
+                f.append(im); B.imgs.append(f);
+            });
+
+            const titleNow = trProject(p.id, 'title', p.title);
+            B.capK.textContent = trUI('preview');
+
+            clearTimeout(clearTimer);
+            B.frame.innerHTML = '';
+            B.frame.className = 'pg-frame';
+            B.frame.dataset.loading = trUI('loading');
+            if (p.mp4) {
+                B.host.textContent = '';
+                B.cap.hidden = true;
+                const v = document.createElement('video');
+                v.title = titleNow + ' – preview video';
+                v.style.width = '100%';
+                v.style.height = '100%';
+                v.style.objectFit = 'contain';
+                v.controls = true;
+                v.playsInline = true;
+                v.preload = 'metadata';
+                v.addEventListener('loadeddata', () => B.frame.classList.add('loaded'));
+                v.src = p.mp4;
+                B.frame.append(v);
+            } else if (p.url) {
+                let host = p.url;
+                try { host = new URL(p.url, location.href).hostname.replace(/^www\./, '') || p.url; } catch (e) {}
+                B.host.textContent = host;
+                B.cap.hidden = false;
+                const fw = p.frameWidth || 1280;
+                const s = B.frame.clientWidth / fw;
+                const f = document.createElement('iframe');
+                f.sandbox = 'allow-scripts allow-same-origin';
+                f.title = titleNow + ' – live preview';
+                f.style.width = fw + 'px';
+                f.style.height = (B.frame.clientHeight / s) + 'px';
+                f.style.transform = `scale(${s})`;
+                f.addEventListener('load', () => B.frame.classList.add('loaded'));
+                f.src = p.url;
+                B.frame.append(f);
+            } else {
+                B.host.textContent = '';
+                B.cap.hidden = true;
+                B.frame.classList.add('empty');
+                B.frame.textContent = trUI('noPreview');
+            }
+
+            B.links.innerHTML = '';
+            let links = p.links && p.links.length ? p.links : (p.url ? [{ label: 'Open site', href: p.url, uiKey: 'openSite' }] : []);
+            links.forEach((l, i) => {
+                const a = document.createElement('a');
+                a.href = l.href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+                const label = l.uiKey ? trUI(l.uiKey) : trLink(p.id, i, l.label);
+                a.append(document.createTextNode(label));
+                const arrow = document.createElement('i'); arrow.textContent = '\u2197';
+                a.append(arrow);
+                B.links.append(a);
+            });
+        }
+
+        onLangChange(() => { if (current) { render(current); fitTitle(); } });
+
+        function openProject(id, fromClick, trigger) {
+            const p = projectById.get(id);
+            if (!p || current === p) return;
+            current = p;
+            lastFocus = trigger || null;
+            hideTip();
+            rescale();
+            render(p);
+            overlay.removeAttribute('inert');
+            overlay.setAttribute('aria-hidden', 'false');
+            overlay.classList.add('open');
+            B.close.focus({ preventScroll: true });
+            if (fromClick) { viaClick = true; location.hash = id; }
+        }
+
+        function hide() {
+            if (!current) return;
+            current = null; viaClick = false;
+            overlay.classList.remove('open');
+            overlay.setAttribute('inert', '');
+            overlay.setAttribute('aria-hidden', 'true');
+            clearTimeout(clearTimer);
+            clearTimer = setTimeout(() => { if (!current) B.frame.innerHTML = ''; }, 350); 
+            if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+        }
+
+        function closeProject() {
+            if (!current) return;
+            if (viaClick && location.hash) { history.back(); return; }   
+            try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+            hide();
+        }
+
+        function syncFromHash() {
+            const id = decodeURIComponent(location.hash.slice(1));
+            if (id && projectById.has(id)) openProject(id, false);
+            else hide();
+        }
+        window.addEventListener('hashchange', syncFromHash);
+
+        B.close.addEventListener('click', closeProject);
+        overlay.addEventListener('click', e => { if (e.target === overlay || e.target === bookStage) closeProject(); });
+        window.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                if ($('#copybox').classList.contains('on')) { $('#copybox').classList.remove('on'); return; }
+                closeProject();
+            }
+            if ((e.key === 'e' || e.key === 'E') && !e.ctrlKey && !e.metaKey && !e.altKey &&
+                !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !current) {
+                setEditing(!editing);
+            }
+        });
+
+        document.fonts && document.fonts.ready.then(() => { refitLabels(); if (current) fitTitle(); });
+
+        const editSvg = $('#edit');
+        let editing = false, selected = null, dirty = false;
+        const els = new Map();
+
+        const centroid = (p) => [p.reduce((a, q) => a + q[0], 0) / p.length, p.reduce((a, q) => a + q[1], 0) / p.length];
+        const toSrc = (e) => {
+            const r = editSvg.getBoundingClientRect();
+            return [(e.clientX - r.left) / r.width * IMG_W, (e.clientY - r.top) / r.height * IMG_H];
+        };
+        const kNow = () => stage.clientWidth / IMG_W;
+        const usedBy = (id) => PROJECTS.some(p => p.shelf === id);
+
+        function syncZone(z) {
+            const o = els.get(z); if (!o) return;
+            o.poly.setAttribute('points', pts(z.points));
+            const [cx, cy] = centroid(z.points);
+            o.text.setAttribute('x', cx); o.text.setAttribute('y', cy);
+            o.handles.forEach((h, i) => { if (z.points[i]) { h.setAttribute('cx', z.points[i][0]); h.setAttribute('cy', z.points[i][1]); } });
+            const live = hits.querySelector(`[data-shelf="${CSS.escape(z.id)}"]`);
+            if (live) live.setAttribute('points', pts(z.points));
+        }
+
+        function updateBar() {
+            $('#eSel').textContent = selected ? `selected: ${selected.id}` : 'nothing selected';
+        }
+
+        function renderEdit() {
+            editSvg.innerHTML = '';
+            els.clear();
+            const k = kNow();
+            SHELVES.forEach(z => {
+                const g = svgEl('g');
+                const poly = svgEl('polygon', { points: pts(z.points), class: 'ez' + (usedBy(z.id) ? ' used' : '') + (z === selected ? ' sel' : '') });
+                poly.addEventListener('pointerdown', e => startMove(e, z));
+                poly.addEventListener('dblclick', e => addVertex(e, z));
+                const text = svgEl('text', { class: 'et' });
+                text.textContent = z.id;
+                text.style.fontSize = (12 / k) + 'px';
+                g.append(poly, text);
+                const handles = [];
+                z.points.forEach((p, i) => {
+                    const c = svgEl('circle', { cx: p[0], cy: p[1], r: 6 / k, class: 'eh' });
+                    c.addEventListener('pointerdown', e => startDrag(e, z, i));
+                    c.addEventListener('dblclick', e => {
+                        e.stopPropagation();
+                        if (z.points.length > 3) { z.points.splice(i, 1); changed(); renderEdit(); }
+                    });
+                    handles.push(c); g.append(c);
+                });
+                if (z === selected) g.classList.add('sel');
+                editSvg.append(g);
+                els.set(z, { g, poly, text, handles });
+                syncZone(z);
+            });
+            updateBar();
+        }
+
+        function changed() { dirty = true; }
+
+        function select(z) {
+            if (selected === z) return;
+            selected = z;
+            els.forEach((o, zone) => {
+                o.g.classList.toggle('sel', zone === z);
+                o.poly.classList.toggle('sel', zone === z);
+            });
+            updateBar();
+        }
+
+        function dragLoop(onMove) {
+            const move = e => { e.preventDefault(); onMove(toSrc(e)); };
+            const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+            window.addEventListener('pointermove', move, { passive: false });
+            window.addEventListener('pointerup', up);
+        }
+
+        function startDrag(e, z, i) {
+            e.stopPropagation(); e.preventDefault();
+            dragLoop(([x, y]) => { z.points[i] = [Math.round(x), Math.round(y)]; changed(); syncZone(z); });
+        }
+        function startMove(e, z) {
+            e.preventDefault();
+            select(z);
+            const [sx, sy] = toSrc(e);
+            const orig = z.points.map(p => p.slice());
+            dragLoop(([x, y]) => {
+                z.points = orig.map(p => [Math.round(p[0] + x - sx), Math.round(p[1] + y - sy)]);
+                changed(); syncZone(z);
+            });
+        }
+        function addVertex(e, z) {
+            const [x, y] = toSrc(e);
+            let best = 0, bd = Infinity;
+            z.points.forEach((a, i) => {
+                const b = z.points[(i + 1) % z.points.length];
+                const dx = b[0] - a[0], dy = b[1] - a[1];
+                const t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / (dx * dx + dy * dy || 1)));
+                const d = Math.hypot(x - (a[0] + t * dx), y - (a[1] + t * dy));
+                if (d < bd) { bd = d; best = i; }
+            });
+            z.points.splice(best + 1, 0, [Math.round(x), Math.round(y)]);
+            changed(); renderEdit();
+        }
+
+        editSvg.addEventListener('pointermove', e => {
+            const [x, y] = toSrc(e);
+            $('#eCoord').textContent = `x ${Math.round(x)}  y ${Math.round(y)}`;
+        });
+        editSvg.addEventListener('pointerdown', e => { if (e.target === editSvg) select(null); });
+
+        $('#eNew').addEventListener('click', () => {
+            const id = (prompt('Name (id) for the new shelf, e.g. leftWallBooks:') || '').trim();
+            if (!id) return;
+            if (shelfById.has(id)) { alert('That id already exists.'); return; }
+            const z = { id, points: [[860, 480], [1060, 480], [1060, 600], [860, 600]] };
+            SHELVES.push(z); shelfById.set(id, z); selected = z; changed(); renderEdit();
+        });
+        $('#eRen').addEventListener('click', () => {
+            if (!selected) return;
+            const id = (prompt('New id:', selected.id) || '').trim();
+            if (!id || id === selected.id) return;
+            if (shelfById.has(id)) { alert('That id already exists.'); return; }
+            shelfById.delete(selected.id); selected.id = id; shelfById.set(id, selected);
+            changed(); buildHits(); renderEdit();
+        });
+        $('#eDel').addEventListener('click', () => {
+            if (!selected || !confirm(`Delete shelf "${selected.id}"?`)) return;
+            SHELVES.splice(SHELVES.indexOf(selected), 1); shelfById.delete(selected.id);
+            selected = null; changed(); buildHits(); renderEdit();
+        });
+        $('#eCopy').addEventListener('click', () => {
+            const body = SHELVES.map(z => `  { id: '${z.id}', points: ${JSON.stringify(z.points)} },`).join('\n');
+            const text =
+`/* layout.js — shelf hitboxes, in image pixels of commisions/library.jpg (1920 x 1080).
+   A shelf becomes clickable once a project in projects.js uses its id as \`shelf\`.
+   Edit visually: index.html?edit (or press E). */
+
+const SHELVES = [
+${body}
+];
+`;
+            $('#copyText').value = text;
+            $('#copybox').classList.add('on');
+            $('#copyText').focus(); $('#copyText').select();
+            try { navigator.clipboard && navigator.clipboard.writeText(text).catch(() => {}); } catch (err) {}
+            dirty = false;
+        });
+        $('#copyClose').addEventListener('click', () => $('#copybox').classList.remove('on'));
+        $('#eExit').addEventListener('click', () => setEditing(false));
+
+        function setEditing(on) {
+            editing = on;
+            document.body.classList.toggle('editing', on);
+            stage.classList.toggle('editing', on);
+            hideTip();
+            if (on) renderEdit(); else { selected = null; editSvg.innerHTML = ''; }
+        }
+        window.addEventListener('beforeunload', e => { if (editing && dirty) { e.preventDefault(); e.returnValue = ''; } });
+        if (/[?&]edit\b/.test(location.search)) setEditing(true);
+        syncFromHash();
+    })();
+    </script>
+</body>
+</html>
