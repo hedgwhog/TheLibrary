@@ -57,15 +57,15 @@ const LANGS = ['en', 'nl', 'sv'];
      miscellaneous: { nl: { text: 'Diversen', size: 40 } },
    -------------------------------------------------------------------------- */
 const I18N_LABELS = {
-  // adding Swedish later means giving each of these an `sv: { text: '' }` too,
+  // Keep Dutch and Swedish entries paired for every label.
   // right alongside its `nl: { text: '' }` — e.g.:
   //   libraryTitle: { nl: { text: '' }, sv: { text: '' } },
   libraryTitle:    { nl: { text: 'De Bibliotheek', size: '30'}, sv: {text: 'Biblioteket'}},
   libraryTagline:  { nl: { text: 'Het volledige archief' }, sv: {text: 'Det kompletta arkivet'}},
   coding:          { nl: { text: 'Coderen' }, sv: {text: 'Kodning'}},
-  drawnBy:         { nl: { text: 'Tekeningen gemaakt door Neekey'}, sv: {text: 'Teckningar gjorda av Neekey'}},
+  drawnBy:         { nl: { text: 'Illustraties van Neekey', size: 24 }, sv: { text: 'Illustrationer av Neekey', size: 24 }},
   projectsHeading: { nl: { text: 'Projecten' }, sv: {text: 'Projekt'}},
-  byAuthor:        { nl: { text: 'Door: Lucas Bouwmeester', size: '27' }, sv: {text: 'Dörr: Lucas Bouwmeester', size: '27'}},
+  byAuthor:        { nl: { text: 'Door: Lucas Bouwmeester', size: 27 }, sv: { text: 'Av: Lucas Bouwmeester', size: 27 }},
   animations:      { nl: { text: 'Animaties' }, sv: {text: 'Animationer'}},
   miscellaneous:   { nl: { text: 'Diversen' }, sv: {text: 'Diverse'}},
   featured:        { nl: { text: '*Uitgelicht*' }, sv: {text: '*Utvald*'}},
@@ -91,7 +91,7 @@ const I18N_LABELS = {
 
      Second paragraph, with a blank line above it.`
 
-   Adding Swedish later means giving each project an `sv: { ... }` too,
+   Keep Dutch and Swedish entries paired for each translated project,
    right alongside its `nl: { ... }`.
    -------------------------------------------------------------------------- */
 const I18N_PROJECTS = {
@@ -127,6 +127,29 @@ const I18N_PROJECTS = {
 
     På webbplatsen kan man anpassa olika delar av en fiktiv tidning, som samtidigt fungerar som en interaktiv genomgång. Via inställningsmenyn – som nås genom den röda knappen – kan man ändra olika aspekter av tidningen och utforska hur den fungerar. `, 
     links: ['Live-webbplats', 'Forskningsuppsats', 'Github'] } 
+  },
+
+  undercurrentOfNoy: {
+    nl: {
+      title: 'Just a Little Undercurrent of Noy',
+      type: 'RPG - ASCII - VoIP - Vissen',
+      status: 'In ontwikkeling',
+      date: 'Oktober 2026 -> nu',
+      group: 'Silte: Muziekproducent - Ikzelf: Ontwikkelaar',
+      duration: 'Lopend',
+      description: `
+      Just a Little Undercurrent of Noy is een ouderwetse tekst-RPG gecombineerd met ASCII-beelden. Het project voelt bijzonder door zijn originaliteit en functies die je niet vaak tegenkomt. Het bevat VoIP, quests, een verhaallijn en meer.`
+    },
+    sv: {
+      title: 'Just a Little Undercurrent of Noy',
+      type: 'RPG - ASCII - VoIP - Fiske',
+      status: 'Pågående',
+      date: 'Oktober 2026 -> nu',
+      group: 'Silte: Musikproducent - Jag: Utvecklare',
+      duration: 'Pågående',
+      description: `
+      Just a Little Undercurrent of Noy är ett klassiskt textbaserat RPG kombinerat med ASCII-grafik. Projektet känns speciellt tack vare sin originalitet och funktioner som man sällan stöter på. Det innehåller VoIP, uppdrag, en berättelse och mer.`
+    }
   },
 
   nen:        { 
@@ -249,12 +272,12 @@ const I18N_PROJECTS = {
   },
 
   metrohall:  { 
-    nl: { title: 'Metrohal-scène', type: 'Animation med 8 bildrutor', status: 'Onvoltooid', date: 'December - 2025', group: 'Individueel', duration: '14 uur', description: `
+    nl: { title: 'Metrohal-scène', type: 'Animatie met 8 frames', status: 'Onvoltooid', date: 'December - 2025', group: 'Individueel', duration: '14 uur', description: `
     Een korte animatie die ik maakte toen ik tijdens schooltijd even pauze wilde van het programmeren.
 
     Ja, ik weet dat de friet veel te goedkoop is.  `},
 
-    sv: { title: 'Sekvensen i Metro Hall', type: 'Animatie van 8 frames', status: 'Oavslutat', date: 'December - 2025', group: 'Individuellt', duration: '14 timmar', description: `
+    sv: { title: 'Sekvensen i Metro Hall', type: 'Animation med 8 bildrutor', status: 'Oavslutat', date: 'December - 2025', group: 'Individuellt', duration: '14 timmar', description: `
     En liten animation jag gjorde när jag behövde en paus från programmeringen under skoltid.
 
     Ja, jag vet att pommes fritesen är alldeles för billiga.  `} 
@@ -353,14 +376,14 @@ Här är några roliga fakta, planer och erfarenheter som jag vill dela med mig 
   },
 
   ikea:      { 
-    nl: { title: 'De IKEA-kamers', type: 'Minigames - Feest - Sociaal - Plezier', status: 'Onvoltooid & Lopend', date: 'September 2026 -> Nu', group: 'Individueel', duration: 'Lopend', description: `
+    nl: { title: 'De IKEA-kamers', type: 'Minigames - Feest - Sociaal - Plezier', status: 'Voltooid', date: 'September 2026 -> Nu', group: 'Individueel', duration: 'Lopend', description: `
     Een website met party-minigames in IKEA-thema
 
     Ik heb dit project gemaakt om te oefenen met React en JS.`, 
     links: ['Live website', 'Github']},
   
 
-    sv: { title: 'IKEA-rummen', type: 'Minispel - Fest - Socialt - Kul', status: 'Oavslutat och pågående', date: 'September 2026 -> Nu', group: 'Individuellt', duration: 'Pågående', description: `
+    sv: { title: 'IKEA-rummen', type: 'Minispel - Fest - Socialt - Kul', status: 'Färdigt', date: 'September 2026 -> Nu', group: 'Individuellt', duration: 'Pågående', description: `
     En webbplats med partyminispel på Ikea-tema
 
     Jag skapade det här projektet för att öva på React och JS.`, 
@@ -411,14 +434,14 @@ gamblingrpg:      {
 const I18N_UI = {
   description: { en: 'Description',      nl: 'Beschrijving', sv: 'Beskrivning'},
   preview:     { en: 'Preview',          nl: 'Voorbeeld', sv: 'Förhandsvisning'},
-  noPreview:   { en: 'no live preview',  nl: 'geen live-voorbeeld', sv: 'ingen förhandsgranskning i realtid'},
-  loading:     { en: 'loading…',         nl: 'laden…', sv: 'belastning…'},
+  noPreview:   { en: 'no live preview',  nl: 'geen livevoorbeeld', sv: 'ingen liveförhandsvisning'},
+  loading:     { en: 'loading…',         nl: 'laden…', sv: 'läser in…'},
   closeBook:   { en: 'Close book',       nl: 'Boek sluiten', sv: 'Stäng boken'},
   openSite:    { en: 'Open site',        nl: 'Site openen', sv: 'Öppna webbplatsen'},
 
   // labels in front of each field on a project's left page, e.g. "Type:"
   typeLabel:      { en: 'Type',       nl: 'Type', sv: 'Typ'},
-  writtenInLabel: { en: 'Written in', nl: 'Geschreven in', sv: 'Skriven på'},
+  writtenInLabel: { en: 'Written in', nl: 'Gebouwd met', sv: 'Teknik'},
   statusLabel:    { en: 'Status',     nl: 'Status', sv: 'Status'},
   dateLabel:      { en: 'Date',       nl: 'Datum', sv: 'Datum'},
   groupLabel:     { en: 'Group',      nl: 'Groep', sv: 'Grupp'},
@@ -430,5 +453,5 @@ const I18N_UI = {
   // in Dutch shows "Taal 🇳🇱". EDIT THE EMOJI RIGHT HERE to change the flag —
   // this is the only place it's set. Order is "word, flag"; flip it to
   // "flag, word" if you'd rather the emoji come first.
-  languageName: { en: 'Toggle language 🇬🇧', nl: 'Taal wisselen 🇳🇱', sv: 'Växla språk 🇸🇪' },
+  languageName: { en: 'Toggle language 🇬🇧', nl: 'Taal wisselen 🇳🇱', sv: 'Byt språk 🇸🇪' },
 };

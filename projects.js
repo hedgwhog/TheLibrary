@@ -36,7 +36,7 @@ const LABELS = [
   // give it a translated `sub` in i18n.js if you ever want a different label per language)
   { key: 'contactPersonal', text: '(Personal) Email:', sub: 'lucasbouwmeester@gmail.com', quad: [[1680, 768], [1860, 882], [1860, 939], [1680, 817]], w: 213, h: 49, size: 17, align: 'left', href: 'lucasbouwmeester@gmail.com' },
   { key: 'contactOnline', text: '(Online RP) Email:', sub: 'hedgwhog@gmail.com', quad: [[1680, 825], [1860, 949], [1860, 1006], [1680, 873]], w: 219, h: 48, size: 17, align: 'left', href: 'hedgwhog@gmail.com' },
-  { key: 'contactGithub', text: 'Github:', sub: 'github.com/lucas-bouwmeester', quad: [[1680, 881], [1860, 1015], [1860, 1072], [1680, 930]], w: 224, h: 49, size: 17, align: 'left', href: 'https://github.com/lucas-bouwmeester' },
+  { key: 'contactGithub', text: 'Github:', sub: 'github.com/hedgwhog', quad: [[1680, 881], [1860, 1015], [1860, 1072], [1680, 930]], w: 224, h: 49, size: 17, align: 'left', href: 'https://github.com/lucas-bouwmeester' },
 ];
 
 
@@ -96,7 +96,7 @@ const PROJECTS = [
     type: 'Creativity - Archive - AI',
     writtenIn: 'HTML - CSS - JavaScript',
     status: 'Finished & Maintained',
-    date: 'September - 2026',
+    date: 'September 2026',
     group: 'Neekey: Drawings - Myself: Coding & Designing',
     duration: 'Commissions: 12 days - Coding: 1 day',
     description: `Around the beginning of August 2026, I realized that I needed a navigation page for all of my projects, since the one on my portfolio was severely outdated. I commissioned one of my friends, Neekey, to design and illustrate a library for the page. Once she finished the illustrations, I could start working on the final touches and bring the project to life.
@@ -115,7 +115,7 @@ const PROJECTS = [
     type: 'RPG - webpage - Unseriousness - Make-A-Thon - Gambling',
     writtenIn: 'HTML - CSS - JS - PHP',
     status: 'Finished',
-    date: 'April - 2026',
+    date: 'April 2026',
     group: 'Sophie: Gamedevelopment (Fullstack) - Thijs & Alaa: Gamedevelopment (Designs) - Thomas: Webpage (Backend) - Myself: Webpage (Frontend & design)',
     duration: '3.5 days',
     description: `WARNING: This project is basically a joke and very unserious!
@@ -151,19 +151,23 @@ const PROJECTS = [
     url: 'https://cursor.hedgwhog.com',
     links: [{ label: 'Live site', href: 'https://cursor.hedgwhog.com' }, { label: 'Research paper', href: 'papers/research_cursor.pdf' }, { label: 'Github', href: 'https://github.com/hedgwhog/Cursor' } ],
   },
-  // {
-  //   id: 'project-4-empty', shelf: 'topLeftBooks',
-  //   title: 'Blank',
-  //   type: '',
-  //   writtenIn: '',
-  //   status: '',
-  //   group: '',
-  //   duration: '',
-  //   description: ``,
-  //   images: IMG,
-  //   url: '',
-  //   links: [],
-  // },
+  {
+    id: 'undercurrentOfNoy', shelf: 'floorStackLeft',
+    title: 'Just a Little Undercurrent of Noy',
+    type: 'RPG - ASCII - VoIP - Fishing',
+    writtenIn: 'JavaScript - HTML - CSS',
+    status: 'Ongoing',
+    group: 'Silte: Music producer - Myself: Developer',
+    date: 'October 2026 -> now',
+    duration: 'Ongoing',
+    description: `
+    Just a Little Undercurrent of Noy is an old based text-rpg combined together with ASCII visuals. It feels special due of its originality and features you don't see often. It includes VoIP, quests, a story line and more.
+    `,
+    images: IMG,
+    url: 'https://undercurrent.hedgwhog.com',
+        links: [{ label: 'Live site', href: 'https://undercurrent.hedgwhog.com/' }, { label: 'Github', href: 'https://github.com/hedgwhog/undercurrent-of-noy' } ],
+  },
+
   {
     id: 'nen', shelf: 'centerRow5',
     title: 'HxH powersystem',
@@ -199,14 +203,14 @@ The project was quick and fun to make. I think I spent around three hours actual
   //   links: [],
   // },
   {
-    id: 'lypmy', shelf: 'floorStackRight',
+    id: 'lypmy', shelf: 'topLeftBooks',
     title: 'LYMPY',
     type: 'Application - UI/UX - Chat platform - Socializing',
     writtenIn: 'PHP - HTMl - CSS - JS',
-    status: 'Unfinished & Ongoing',
-    date: 'September 2026 -> Now',
+    status: 'Unfinished',
+    date: 'September 2026',
     group: 'Sophie: Backend - Myself: Frontend & Design',
-    duration: 'Ongoing',
+    duration: '1 month',
     description: `LYMPY is a chat platform designed to encourage people to actively share what they’ve been up to during the week. The idea is simple: you have to upload 2–5 photos per week for every group chat you’re part of. Once the weekly deadline passes, the photos are turned into a collage and shared in the group chat for everyone to see.
 
 The catch is that you have to share photos If you don’t, you lose access to the group chat for that week. The goal is to encourage people to actually interact with each other instead of letting conversations slowly die out.
@@ -277,7 +281,7 @@ Fun fact: the name LYMPY stands for “Lucas, Your Parents Miss You.” Sophie t
     type: 'Story - Myth - Book',
     writtenIn: 'HTML - CSS - JS',
     status: 'Unfinished',
-    date: 'November - 2025',
+    date: 'November 2025',
     group: 'Individually',
     duration: '2 weeks',
     description: `The Story of Azurae is a web application based on a myth I wrote for English class. It started as a fun side project that I worked on alongside the assignment. Eventually, I put it aside after the deadline passed, since what I had completed was already sufficient for the assignment.
@@ -359,10 +363,10 @@ Quick note: Neocity-li means "Neocity Light", and the feel of the city is heavil
     title: 'The Ikea-rooms',
     type: 'Minigames - Party - Social - Fun',
     writtenIn: 'React - JS',
-    status: 'Unfinished & Ongoing',
-    date: 'September 2026 -> Now',
-    group: 'Indivdually',
-    duration: 'Ongoing',
+    status: 'Finished',
+    date: 'September 2026',
+    group: 'Individually',
+    duration: '3 weeks',
     description: `A party minigame website with the theme of Ikea
     
     I made this project to practice React and JS.`,
@@ -530,7 +534,7 @@ Yes, I know the fries are way too cheap.`,
   //   links: [],
   // },
   {
-    id: 'portfolio', shelf: 'floorStackLeft',
+    id: 'portfolio', shelf: 'floorStackRight',
     title: 'Portfolio website',
     type: 'Frontend - Interactive - ASCII - Artwork',
     writtenIn: 'HTML - SCSS - JS',
