@@ -87,6 +87,7 @@ const IMGportfolio = ['images/portfolio-1.png', 'images/portfolio-2.png'];
 const IMGazurae = ['images/azurae-1.png', 'images/azurae-2.png'];
 const IMGnen = ['images/nen-1.jpg', 'images/nen-2.jpeg'];
 const IMGcursor = ['images/cursor-1.png', 'images/cursor-2.png'];
+const IMGindex = ['images/index-1.png', 'images/index-2.png'];
 const IMGmetrohall = ['images/metrohall-1.png', 'images/placeholder-2.png'];
 
 const PROJECTS = [
@@ -223,19 +224,26 @@ Fun fact: the name LYMPY stands for “Lucas, Your Parents Miss You.” Sophie t
     url: 'https://lypmy.hedgwhog.com',
     links: [{ label: 'Live site', href: 'https://lypmy.hedgwhog.com' }, { label: 'Github', href: 'https://github.com/hedgwhog/LYPMY' } ],
   },
-  // {
-  //   id: 'project-8-empty', shelf: 'topStack',
-  //   title: 'Blank',
-  //   type: '',
-  //   writtenIn: '',
-  //   status: '',
-  //   group: '',
-  //   duration: '',
-  //   description: ``,
-  //   images: IMG,
-  //   url: '',
-  //   links: [],
-  // },
+  {
+    id: 'index', shelf: 'topStack',
+    title: 'Index',
+    type: 'Application - Terminal - Agenda - Productivity',
+    writtenIn: 'PHP - CSS - SQLite',
+    status: 'finished & maintained',
+    group: 'Individually',
+    duration: '2 days',
+    description: `Index is a terminal style agenda that I made for myself. I noticed that I kept forgetting things (espcially birthdays), so I decided to develop an application in what I can note down my plans, and see when I have them planned.
+    
+    The application also works on phone, but it is not optimized for it. It is the best to add new things on your PC, but you can view it well on phone.
+
+    It also includes a to do list and a bucket list. 
+
+    It is made just for myself, so the only login details are my owm.
+    `,
+    images: IMGindex,
+    url: 'https://index.hedgwhog.com',
+    links: [{ label: 'Live site', href: 'https://index.hedgwhog.com' }, { label: 'Github', href: 'https://github.com/hedgwhog/Index' } ],
+  },
   // {
   //   id: 'project-9-empty', shelf: 'topRightBooks',
   //   title: 'Blank',

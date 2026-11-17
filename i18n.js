@@ -421,6 +421,40 @@ gamblingrpg:      {
     links: ['Live-webbplats', 'Github']}  
   },
 
+  index: {
+    nl: {
+      type: 'Applicatie - Terminal - Agenda - Productiviteit',
+      status: 'Afgerond & onderhouden',
+      group: 'Individueel',
+      duration: '2 dagen',
+      description: `
+    Index is een agenda in terminalstijl die ik voor mezelf heb gemaakt. Ik merkte dat ik steeds dingen vergat (vooral verjaardagen), dus besloot ik een applicatie te ontwikkelen waarin ik mijn plannen kan noteren en kan zien wanneer ze gepland staan.
+
+    De applicatie werkt ook op telefoons, maar is daar niet voor geoptimaliseerd. Het is het handigst om nieuwe dingen op je pc toe te voegen, maar je kunt alles prima bekijken op je telefoon.
+
+    De applicatie bevat ook een takenlijst en een bucketlist.
+
+    Ik heb de applicatie alleen voor mezelf gemaakt, dus de enige inloggegevens zijn die van mijzelf.`,
+      links: []
+    },
+
+    sv: {
+      type: 'Applikation - Terminal - Kalender - Produktivitet',
+      status: 'Färdig & underhållen',
+      group: 'Individuellt',
+      duration: '2 dagar',
+      description: `
+    Index är en kalender i terminalstil som jag skapade för eget bruk. Jag märkte att jag hela tiden glömde saker (särskilt födelsedagar), så jag bestämde mig för att utveckla en applikation där jag kan skriva ner mina planer och se när de är inplanerade.
+
+    Applikationen fungerar även på telefoner, men är inte optimerad för dem. Det är bäst att lägga till nya saker på datorn, men du kan enkelt se allt på telefonen.
+
+    Den innehåller även en att göra-lista och en bucketlist.
+
+    Jag har skapat applikationen enbart för eget bruk, så de enda inloggningsuppgifterna är mina egna.`,
+      links: []
+    }
+  },
+
   // Add a new project later? Just add `yourNewId: { nl: { ... } }` here,
   // matching its `id` in projects.js — it isn't required, translations
   // simply won't show for it until you do.
