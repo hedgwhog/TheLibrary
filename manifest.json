@@ -1,0 +1,10 @@
+{
+  "name": "index",
+  "short_name": "index",
+  "description": "A terminal style planner, to do list and bucket list.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
