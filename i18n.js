@@ -454,6 +454,31 @@ gamblingrpg:      {
       links: []
     }
   },
+  lgdeck: {
+    nl: {
+      type: 'Talen leren - Flashcards - Oefentool',
+      status: 'In ontwikkeling',
+      group: 'Individueel',
+      duration: 'Doorlopend',
+      description: `
+    LgDeck is een eenvoudige flashcardapplicatie die ik heb gemaakt om mezelf te helpen met het leren en oefenen van Oekraïens. In de applicatie kan de gebruiker de taal kiezen die hij of zij wil oefenen door het alfabet toe te voegen, gevolgd door woorden om met behulp van de flashcards te oefenen.
+
+    Het ontwerp is eenvoudig en is gebaseerd op een kaartspel.`,
+      links: ['Live website', 'Github']
+    },
+
+    sv: {
+      type: 'Språkinlärning - Flashcards - Övningsverktyg',
+      status: 'Pågående',
+      group: 'Individuellt',
+      duration: 'Löpande',
+      description: `
+    LgDeck är en enkel flashcard-applikation som jag skapade för att hjälpa mig att studera och öva på ukrainska. I applikationen kan användaren välja vilket språk hen vill öva på genom att lägga till alfabetet och sedan ord att träna på med hjälp av flashcards.
+
+    Designen är enkel och baserad på en kortlek.`,
+      links: ['Live-webbplats', 'Github']
+    }
+  },
 
   // Add a new project later? Just add `yourNewId: { nl: { ... } }` here,
   // matching its `id` in projects.js — it isn't required, translations
@@ -469,6 +494,9 @@ const I18N_UI = {
   description: { en: 'Description',      nl: 'Beschrijving', sv: 'Beskrivning'},
   preview:     { en: 'Preview',          nl: 'Voorbeeld', sv: 'Förhandsvisning'},
   noPreview:   { en: 'no live preview',  nl: 'geen livevoorbeeld', sv: 'ingen liveförhandsvisning'},
+  iframeBlocked: { en: 'This website can’t be shown here because it blocks embedding. Please check out “Live site” to see the website.',
+                   nl: 'Deze website kan hier niet worden weergegeven omdat insluiten geblokkeerd is. Bekijk “Live website” om de website te zien.',
+                   sv: 'Den här webbplatsen kan inte visas här eftersom den blockerar inbäddning. Kolla in “Live-webbplats” för att se webbplatsen.'},
   loading:     { en: 'loading…',         nl: 'laden…', sv: 'läser in…'},
   closeBook:   { en: 'Close book',       nl: 'Boek sluiten', sv: 'Stäng boken'},
   openSite:    { en: 'Open site',        nl: 'Site openen', sv: 'Öppna webbplatsen'},

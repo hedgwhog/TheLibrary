@@ -347,6 +347,10 @@ html[lang="nl"] {
         background: transparent;
 }.pg-frame.loaded iframe {
         background: #fff;
+}.pg-frame.blocked {
+        padding: 0 36px;
+        text-align: center;
+        line-height: 1.35;
 }.pg-links {
         left: 760px;
         top: 574px;
@@ -849,21 +853,41 @@ html[lang="nl"] {
                 v.addEventListener('loadeddata', () => B.frame.classList.add('loaded'));
                 v.src = p.mp4;
                 B.frame.append(v);
+            } else if (p.url && p.iframeBlocked) {
+                // Site refuses to be embedded (X-Frame-Options / CSP frame-ancestors):
+                // show a message instead of the browser's gray "refused to connect" page.
+                let host = p.url;
+                try { host = new URL(p.url, location.href).hostname.replace(/^www\./, '') || p.url; } catch (e) {}
+                B.host.textContent = host;
+                B.cap.hidden = false;
+                B.frame.classList.add('empty', 'blocked');
+                B.frame.textContent = trUI('iframeBlocked') ||
+                    'This website can\u2019t be shown here because it blocks embedding. Please check out \u201cLive site\u201d to see the website.';
             } else if (p.url) {
                 let host = p.url;
                 try { host = new URL(p.url, location.href).hostname.replace(/^www\./, '') || p.url; } catch (e) {}
                 B.host.textContent = host;
                 B.cap.hidden = false;
-                const fw = p.frameWidth || 1280;
-                const s = B.frame.clientWidth / fw;
+                const isPdf = /\.pdf($|[?#])/i.test(p.url);
                 const f = document.createElement('iframe');
-                f.sandbox = 'allow-scripts allow-same-origin';
                 f.title = titleNow + ' – live preview';
-                f.style.width = fw + 'px';
-                f.style.height = (B.frame.clientHeight / s) + 'px';
-                f.style.transform = `scale(${s})`;
+                if (isPdf) {
+                    // The browser's PDF viewer refuses to run inside a sandboxed iframe
+                    // (that's the gray "sad page"), so PDFs get no sandbox and no scaling.
+                    B.host.textContent = p.url.split(/[?#]/)[0].split('/').pop();
+                    f.style.width = '100%';
+                    f.style.height = '100%';
+                    f.src = p.url.includes('#') ? p.url : p.url + '#view=FitH';
+                } else {
+                    const fw = p.frameWidth || 1280;
+                    const s = B.frame.clientWidth / fw;
+                    f.sandbox = 'allow-scripts allow-same-origin';
+                    f.style.width = fw + 'px';
+                    f.style.height = (B.frame.clientHeight / s) + 'px';
+                    f.style.transform = `scale(${s})`;
+                    f.src = p.url;
+                }
                 f.addEventListener('load', () => B.frame.classList.add('loaded'));
-                f.src = p.url;
                 B.frame.append(f);
             } else {
                 B.host.textContent = '';

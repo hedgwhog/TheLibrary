@@ -64,6 +64,7 @@ const LABELS = [
      mp4:         'videos/my-clip.mp4',     // OPTIONAL: shows a video (with controls) in the iframe square instead. Takes priority over `url` for that square if both are set.
      url:         'https://…',              // first page shown in the iframe (optional)
      frameWidth:  1280,                     // width the site renders at inside the iframe (optional)
+     iframeBlocked: true,                   // OPTIONAL: set when the site refuses to load in an iframe ("… refused to connect"); shows a message pointing to the links instead
      links:       [ { label: 'Live site', href: 'https://…' } ],
    }
 
@@ -165,7 +166,7 @@ const PROJECTS = [
     Just a Little Undercurrent of Noy is an old based text-rpg combined together with ASCII visuals. It feels special due of its originality and features you don't see often. It includes VoIP, quests, a story line and more.
     `,
     images: IMG,
-    url: 'https://undercurrent.hedgwhog.com',
+    url: 'https://a-totally-normal-fishing-rpg.hedgwhog.com/',
         links: [{ label: 'Live site', href: 'https://undercurrent.hedgwhog.com/' }, { label: 'Github', href: 'https://github.com/hedgwhog/undercurrent-of-noy' } ],
   },
 
@@ -340,19 +341,23 @@ Quick note: Neocity-li means "Neocity Light", and the feel of the city is heavil
     url: 'https://neocity.hedgwhog.com/',
     links: [{ label: 'Live site', href: 'https://neocity.hedgwhog.com' }, { label: 'Github', href: 'https://github.com/hedgwhog/neocity-li' }],
   },
-  // {
-  //   id: 'project-15-empty', shelf: 'centerRow6',
-  //   title: 'Blank',
-  //   type: '',
-  //   writtenIn: '',
-  //   status: '',
-  //   group: '',
-  //   duration: '',
-  //   description: ``,
-  //   images: IMG,
-  //   url: '',
-  //   links: [],
-  // },
+  {
+    id: 'lgdeck', shelf: 'centerRow6',
+    title: 'LgDeck',
+    type: 'Language Learning - Flashcards - Practice tool',
+    writtenIn: 'TypeScript - CSS - HTML',
+    status: 'Ongoing',
+    group: 'Individually',
+    duration: 'Ongoing',
+    description: ` LgDeck is a simple flashcard application I created to help me study/practice Ukrainian. In the application, the user can insert the language they want to practice, by adding the Alphabet, and then words to practice with the flashcards.
+
+    The design is simple, and based of a deck of cards.
+    `,
+    images: IMG,
+    url: 'https://lgdeck.hedgwhog.com/',
+    iframeBlocked: true,
+        links: [{ label: 'Live site', href: 'https://lgdeck.hedgwhog.com' }, { label: 'Github', href: 'https://github.com/hedgwhog/LgDeck' }],
+  },
   // {
   //   id: 'project-16-empty', shelf: 'centerRow7',
   //   title: 'Blank',
@@ -512,7 +517,7 @@ Yes, I know the fries are way too cheap.`,
     group: '',
     duration: '',
     description: `Take a look at my CV and get a quick overview of my skills & experiences!`,
-    url: 'papers/CV_Lucas_Bouwmeester_English.pdf',
+    url: 'https://hedgwhog.com/papers/CV_Lucas_Bouwmeester_English.pdf',
     links: [{ label: 'Check English CV', href: 'papers/CV_Lucas_Bouwmeester_English.pdf' }, { label: 'Check Dutch CV', href: 'papers/CV_Lucas_Bouwmeester_Dutch.pdf' }],
   },
   // {
